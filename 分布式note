@@ -1,0 +1,35 @@
+安装scrapy-redis
+
+pip3 install scrapy-redis
+
+修改设置文件
+
+(1)设置去重主键,使用的是scrapy-redis的去重主键而不是scrapy自己的去重主键了
+DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
+
+(2)设置调度器,使用scrapy-redis重写调度器,而不是用scrapy自己的调度器了
+SCHEDULER = "scrapy_redis.scheduler.Scheduler"
+
+(3)可以实现断点爬取,(请求的记录不会丢失,会存储在redis数据库中,不会清除redis任务队列)
+SCHEDULER_PERSIST = True
+
+(4)设置任务队列的模式，有以下三种选一种
+
+是scrapy-redis默认使用的队列模式，有自己的优先级
+SCHEDULER_QUEUE_CLASS = "scrapy_redis.queue.SpiderPriorityQueue"
+
+使用了队列的形式,任务先进先出
+SCHEDULER_QUEUE_CLASS = "scrapy_redis.queue.SpiderQueue"
+
+采用了栈的形式,先进后出
+SCHEDULER_QUEUE_CLASS = "scrapy_redis.queue.SpiderStack"
+
+(5)实现这个管道可以将爬虫端获取到的数据统一保存在redis数据库中
+'scrapy_redis.pipelines.RedisPipeline': 400,
+
+(6)要指定redis数据库的ip和端口
+REDIS_HOST = '127.0.0.1'
+
+(7)指定redis数据库主机和端口
+REDIS_PORT = 6379
+
